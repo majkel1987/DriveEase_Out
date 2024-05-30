@@ -1,0 +1,24 @@
+﻿@inject IConfiguration Configuration
+
+<div class="card" style="width: 18rem;">
+  <img src="@(_baseUrl + CarModel.ImageURL)" class="card-img-top" alt="@CarModel.Model">
+  <div class="card-body">
+    <h5 class="card-title">@CarModel.Brand</h5>
+    <p class="card-text">@CarModel.Model @CarModel.Year @CarModel.Color</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>
+
+@code {
+	private string _baseUrl = string.Empty;
+
+	[Parameter]
+	public CarDto CarModel { get; set; }
+
+protected override void OnInitialized()
+	{
+		_baseUrl = Configuration["ApiConfiguration:BaseAddress"];
+	}
+	
+
+}

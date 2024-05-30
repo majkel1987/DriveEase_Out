@@ -1,0 +1,13 @@
+﻿global using DriveEase.Application.Cars.Queries;
+global using DriveEase.Application.Common.Interfaces;
+global using DriveEase.Domain.Entities;
+global using DriveEase.Infrastructure.Persistance;
+global using DriveEase.Infrastructure.Persistance.Extensions;
+global using DriveEase.Infrastructure.Services;
+global using Mapster;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using System.Reflection;

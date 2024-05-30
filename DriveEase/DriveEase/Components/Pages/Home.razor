@@ -1,0 +1,141 @@
+﻿@page "/"
+@using DriveEase.Shared.CarServices.Dtos
+@inject ICarHttpRepository CarHttpRepository
+@inject IServiceHttpRepository ServiceHttpRepository
+@inject IConfiguration Configuration
+
+<PageTitle>Home</PageTitle>
+
+@if (_cars == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<section class="container my-3">
+		<header class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<h6 class="text-muted">Dashboard</h6>
+				<h3>Cześć Tony!</h3>
+			</div>
+		</header>
+		<main class="row">
+			<section class="col-md-6 mb-4">
+				<div class="card shadow-sm" style="background-color: white;">
+					<h5 class="card-header">
+						Dostępne pojazdy (@_cars.Count())
+					</h5>
+					<div class="card-body">
+						<ul class="row list-unstyled d-flex">
+							@foreach (var car in _cars)
+							{
+								<li class="d-flex mb-2">
+									<div class="col-2 align-items-center">
+										<img src="@(_baseUrl + car.LogoURL)" style="width: 30px" alt="car">
+									</div>
+									<div class="col-6">
+										@car.Brand - @car.Model
+									</div>
+									<div class="col-4">
+										@car.LicensePlate
+									</div>
+								</li>
+							}
+						</ul>
+					</div>
+				</div>
+			</section>
+			<section class="col-md-6 mb-4">
+				<div class="card shadow-sm mb-4" style="background-color: white;">
+					<h5 class="card-header">
+						Podsumowanie
+					</h5>
+					<div class="card-body">
+						<ul class="list-unstyled d-flex justify-content-between">
+							<li class="col text-center">
+								<div class="text-danger font-weight-bold" style="font-size: 2.2em;">5</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Rezerwacje</span>
+							</li>
+							<li class="col text-center">
+								<div class="text-primary font-weight-bold" style="font-size: 2.2em;">@_cars.Count()</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Pojazdy</span>
+							</li>
+							<li class="col text-center">
+								<div class="text-success font-weight-bold" style="font-size: 2.2em;">5</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Klienci</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="card shadow-sm mb-4" style="background-color: white;">
+					<h5 class="card-header">
+						Nadchodzące serwisy
+					</h5>
+					<div class="card-body">
+						<ul class="list-unstyled d-flex justify-content-between">
+							<li class="col text-center">
+								<div class="text-danger font-weight-bold" style="font-size: 2.2em;">@_todayServices</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Dziś</span>
+							</li>
+							<li class="col text-center">
+								<div class="text-primary font-weight-bold" style="font-size: 2.2em;">@_tomorrowServices</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Jutro</span>
+							</li>
+							<li class="col text-center">
+								<div class="text-secondary font-weight-bold" style="font-size: 2.2em;">@_laterServices</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Później</span>
+							</li>
+							<li class="col text-center">
+								<div class="text-success font-weight-bold" style="font-size: 2.2em;">
+									@_services.Where(x => x.IsFinished == true).Count()
+								</div>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Zakończone</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</section>
+		</main>
+	</section>
+}
+
+@code {
+	private IEnumerable<CarDto> _cars;
+	private IEnumerable<ServiceHistoryDto> _services;
+
+	private int _todayServices;
+	private int _tomorrowServices;
+	private int _laterServices;
+
+	private string _baseUrl = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_baseUrl = Configuration["ApiConfiguration:BaseAddress"];
+
+		try
+		{
+			var cars = await CarHttpRepository.GetCars();
+			var services = await ServiceHttpRepository.GetAllServices();
+			_cars = cars;
+			_services = services;
+
+			LoadServiceCount();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
+		}
+		StateHasChanged();
+	}
+
+	private void LoadServiceCount()
+	{
+		var todayServices = DateTime.Today;
+		var tomorrowServices = DateTime.Today.AddDays(1);
+
+		_todayServices = _services.Count(x => x.ServiceDate.Date == todayServices && x.IsFinished == false);
+		_tomorrowServices = _services.Count(x => x.ServiceDate.Date == tomorrowServices && x.IsFinished == false);
+		_laterServices = _services.Count(x => x.ServiceDate.Date > tomorrowServices && x.IsFinished == false);
+	}
+}

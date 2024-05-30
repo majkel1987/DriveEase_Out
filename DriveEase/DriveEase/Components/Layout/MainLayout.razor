@@ -1,0 +1,29 @@
+﻿@inherits LayoutComponentBase
+
+<RadzenComponents />
+
+<RadzenLayout>
+	<RadzenHeader>
+		<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+			@* <LoginDisplay /> *@
+		</RadzenStack>
+	</RadzenHeader>
+	<RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+		<RadzenPanelMenu>
+			<RadzenPanelMenuItem Text="Panel Użytkownika" Path="/" Icon="home" />
+			<RadzenPanelMenuItem Text="Flota" Path="cars" Icon="motorcycle" />
+			<RadzenPanelMenuItem Text="Rejestracja" Path="rejestracja" Icon="account_box" />
+		</RadzenPanelMenu>
+	</RadzenSidebar>
+	<RadzenBody>
+		<div class="rz-p-4">
+			@Body
+		</div>
+	</RadzenBody>
+	<RadzenFooter>
+	</RadzenFooter>
+</RadzenLayout>
+
+@code {
+	bool sidebar1Expanded = true;
+}

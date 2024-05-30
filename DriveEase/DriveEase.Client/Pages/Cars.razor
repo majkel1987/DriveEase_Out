@@ -1,0 +1,115 @@
+﻿@page "/cars"
+@inject ICarHttpRepository CarHttpRepository
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+@attribute [StreamRendering]
+
+<PageTitle>Flota</PageTitle>
+
+	@if (_cars == null)
+{
+	<p><em>Ładowanie aut....</em></p>
+}
+else if (_cars.Count() == 0)
+{
+	<p>Nie znaleziono żadnych samochodów!</p>
+}
+else
+{
+	<section class="container my-3">
+		<header class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<h6 class="text-muted">Flota</h6>
+				<h3>Lista Pojazdów</h3>
+			</div>
+		</header>
+
+		<div class="mb-3">
+			<RadzenButton Text="Dodaj nowy pojazd" Icon="add" IconPosition="IconPosition.Left"
+						  ButtonStyle="ButtonStyle.Primary" Click="@NavigateToAddNewCar" />
+		</div>
+
+		<RadzenDataGrid PageSize="5" AllowPaging="true" ShowPagingSummary="true"
+			Data="@_cars" TItem="CarDto" ColumnWidth="80px">
+			<Columns>
+				<RadzenDataGridColumn TItem="CarDto" Property="Brand" Title="Brand" />
+				<RadzenDataGridColumn TItem="CarDto" Property="Model" Title="Model">
+					<Template Context="car">
+						<RadzenLink href="@($"/car/{car.Id}")">
+							@car.Model
+						</RadzenLink>
+					</Template>
+				</RadzenDataGridColumn>
+				<RadzenDataGridColumn TItem="CarDto" Property="Year" Title="Year" />
+				<RadzenDataGridColumn TItem="CarDto" Property="FuelType" Title="Fuel Type" />
+				<RadzenDataGridColumn TItem="CarDto" Property="Transmission" Title="Transmission" />
+				<RadzenDataGridColumn TItem="CarDto" Property="Engine" Title="Engine" />
+				<RadzenDataGridColumn TItem="CarDto" Title="Availability">
+					<Template Context="car">
+						@if (car.IsAvailable)
+						{
+							<RadzenBadge Text="Dostępny" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Success" />
+						}
+						else
+						{
+							<RadzenBadge Text="Niedostępny" Shade="Shade.Light" BadgeStyle="BadgeStyle.Danger" />
+						}
+					</Template>
+				</RadzenDataGridColumn>
+				<RadzenDataGridColumn TItem="CarDto" Title="Akcje">
+					<Template Context="car">
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteCar(car.Id))" 
+							Size="ButtonSize.Small"/>
+						<RadzenButton Icon="privacy_tip" ButtonStyle="ButtonStyle.Info" Click="@(args => GoToCarDetails(car.Id))"
+									  Size="ButtonSize.Small" />
+					</Template>
+				</RadzenDataGridColumn>
+			</Columns>
+		</RadzenDataGrid>
+	</section>
+}
+
+
+@code {
+	private IEnumerable<CarDto> _cars;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			var cars = await CarHttpRepository.GetCars();
+			_cars = cars;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
+		}
+		StateHasChanged();
+	}
+
+	private void NavigateToAddNewCar()
+	{
+		NavigationManager.NavigateTo("/addnewcar");
+	}
+
+	private void GoToCarDetails(int id)
+	{
+		NavigationManager.NavigateTo($"/car/{id}");
+	}
+
+	private async Task DeleteCar(int id)
+	{
+		try
+		{
+			await CarHttpRepository.DeleteCar(id);
+			_cars = await CarHttpRepository.GetCars();
+			StateHasChanged();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas usuwania pojazdu: {ex.Message}");
+		}
+
+
+	}
+}

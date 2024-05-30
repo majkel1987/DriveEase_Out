@@ -1,0 +1,240 @@
+﻿@page "/addnewcar"
+@page "/editcar/{CarId:int}"
+@inject ICarHttpRepository CarHttpRepository
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+@attribute [StreamRendering]
+
+<section class="container my-3">
+	<header class="d-flex justify-content-between align-items-center mb-2">
+		<div>
+			<h6 class="text-muted">Flota</h6>
+			<h3>@(!_isEdit ? "Dodawanie nowego pojazdu" : "Edycja danych pojazdu")</h3>
+		</div>
+	</header>
+	<div class="rz-p-0 rz-p-md-12">
+		<EditForm Model="_newCar" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+			<DataAnnotationsValidator />
+			<RadzenRow>
+				<RadzenColumn Size="6">
+					<RadzenStack Class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+
+						<RadzenFormField Text="Marka Pojazdu" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newCar.Brand" Disabled=@(_isEdit) />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.Brand)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Model Pojazdu" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newCar.Model" Disabled=@(_isEdit) />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.Model)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Rok produkcji" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenNumeric @bind-Value="@_newCar.Year" Disabled=@(_isEdit) />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.Year)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Numer rejestracyjny" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newCar.LicensePlate" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.LicensePlate)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Numer VIN" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newCar.VinNumber" Disabled=@(_isEdit) />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.VinNumber)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Kolor" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenTextBox @bind-Value="@_newCar.Color" Disabled=@(_isEdit) />
+						</RadzenFormField>
+
+						<RadzenFormField Text="Przebieg" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenTextBox @bind-Value="@_newCar.Mileage" />
+						</RadzenFormField>
+
+						<RadzenFormField Text="Rodzaj paliwa" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenDropDown Data=@_fuelTypeEngines Disabled=@(_isEdit) TextProperty="Name" ValueProperty="Value" @bind-Value="@_newCar.FuelType"
+												Change="@(args => UpdateValue(args, nameof(_newCar.FuelType)))" Name="FuelType" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.FuelType)" />
+							</Helper>
+						</RadzenFormField>
+
+					</RadzenStack>
+				</RadzenColumn>
+				<RadzenColumn Size="6">
+					<RadzenStack Class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+
+						<RadzenFormField Text="Skrzynia biegów" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenDropDown Data=@_transmissionType Disabled=@(_isEdit) TextProperty="Name" ValueProperty="Value" 
+								@bind-Value="@_newCar.Transmission" Change="@(args => UpdateValue(args, nameof(_newCar.Transmission)))" Name="Transmission" />
+						</RadzenFormField>
+
+						<RadzenFormField Text="Typ silnika" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newCar.Engine" Disabled=@(_isEdit) />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.Engine)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Moc silnika" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenTextBox @bind-Value="@_newCar.Power" Disabled=@(_isEdit) />
+						</RadzenFormField>
+
+						<RadzenFormField Text="Numer polisy ubezpieczeniowej" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newCar.InsurancePolicyNumber" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newCar.InsurancePolicyNumber)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Czy pojazd jest dostępny?" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenRadioButtonList @bind-Value="@_newCar.IsAvailable" TValue="bool" class="rz-m-4 rz-mt-8">
+								<Items>
+									<RadzenRadioButtonListItem Text="Tak" Value="true" />
+									<RadzenRadioButtonListItem Text="Nie" Value="false" />
+								</Items>
+							</RadzenRadioButtonList>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Data ostatniego przeglądu" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenDatePicker @bind-Value="@_newCar.CarReviewDate" ShowCalendarWeek />
+							</RadzenFormField>
+
+							<RadzenFormField Text="Status pojazdu" AllowFloatingLabel="false" Variant=Variant.Outlined>
+								<RadzenDropDown Data=@_carStatus TextProperty="Name" ValueProperty="Value" @bind-Value="@_newCar.Status"
+												Change="@(args => UpdateValue(args, nameof(_newCar.Status)))" Name="Status" />
+							</RadzenFormField>
+
+							<RadzenFormField Text="Wyposażenie" AllowFloatingLabel="false" Variant=Variant.Outlined>
+								<RadzenTextArea @bind-Value="@_carFeatures" />
+							</RadzenFormField>
+						</RadzenStack>
+					</RadzenColumn>
+				</RadzenRow>
+				<div class="mb-3">
+					<RadzenButton ButtonType="ButtonType.Submit" Text="Zapisz" IconPosition="IconPosition.Left"
+								  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="@OnValidSubmit" />
+				</div>
+			</EditForm>
+		</div>
+	</section>
+
+
+	@code {
+	[Parameter]
+	public int? CarId { get; set; }
+
+	public CreateCarDto _newCar = new();
+
+	private string _carFeatures;
+	private IEnumerable<EnumValue> _fuelTypeEngines;
+	private IEnumerable<EnumValue> _transmissionType;
+	private IEnumerable<EnumValue> _carStatus;
+
+	private bool _isEdit => CarId.HasValue;
+
+
+	protected override async void OnInitialized()
+	{
+		_fuelTypeEngines = GetEnumValues<FuelTypeEngines>();
+		_transmissionType = GetEnumValues<TransmissionType>();
+		_carStatus = GetEnumValues<CarStatus>();
+
+		if (_isEdit)
+		{
+			var egsistingCar = await CarHttpRepository.GetCarById(CarId.Value);
+			_newCar = egsistingCar.Adapt<CreateCarDto>();
+
+			if (_newCar.Features != null)
+			{
+				_carFeatures = string.Join(",", _newCar.Features);
+			}
+		}
+
+	}
+
+	private IEnumerable<EnumValue> GetEnumValues<T>() where T : Enum
+	{
+		return Enum.GetValues(typeof(T))
+			.Cast<T>()
+			.Select(e => new EnumValue { Name = e.ToString(), Value = e })
+			.ToList();
+	}
+
+	private async Task OnValidSubmit()
+	{
+		_newCar.Features = _carFeatures?.Split(',').Select(f => f.Trim()).ToList();
+
+		var carToUpdate = _newCar.Adapt<UpdateCarDto>();
+
+		try
+		{
+			if (_isEdit)
+			{
+				await CarHttpRepository.EditCar(CarId.Value, carToUpdate);
+			}
+			else
+			{
+				await CarHttpRepository.CreateCar(_newCar);
+
+			}
+			
+			NavigationManager.NavigateTo("/cars");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("Error:" + ex.Message);
+		}
+
+	}
+
+	private void OnInvalidSubmit()
+	{
+		Console.WriteLine("Invalid submit");
+	}
+
+	private void UpdateValue(object value, string propertyName)
+	{
+		var property = _newCar.GetType().GetProperty(propertyName);
+
+		if (property != null)
+		{
+			property.SetValue(_newCar, value);
+			StateHasChanged();
+		}
+	}
+
+	class EnumValue
+	{
+		public string Name { get; set; }
+		public object Value { get; set; }
+	}
+
+}
