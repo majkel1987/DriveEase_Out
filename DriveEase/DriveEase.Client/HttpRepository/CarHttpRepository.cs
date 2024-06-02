@@ -48,5 +48,10 @@ namespace DriveEase.Client.HttpRepository
 		{
 			return await _httpClient.GetFromJsonAsync<IEnumerable<CarDto>>("Car");
 		}
+
+		public async Task<CarDto> GetCarWithServiceHistory(int id)
+		{
+			return await _httpClient.GetFromJsonAsync<CarDto>($"Car/service-history/{id}");
+		}
 	}
 }
