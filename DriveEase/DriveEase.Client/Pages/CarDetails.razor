@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveAuto
 
-<PageTitle>Vwhicle Details</PageTitle>
+<PageTitle>Vehicle Details</PageTitle>
 
 @if (_car == null)
 {
@@ -19,7 +19,7 @@ else
 				<h3>@_car.Brand - @_car.Model</h3>
 			</div>
 			<div class="mb-3">
-				<button class="btn btn-outline-primary" onclick="NavigateToReservations()">Go to reservations</button>
+				<button class="btn btn-outline-primary" @onclick="NavigateToReservations">Go to reservations</button>
 			</div>
 		</header>
 		<nav class="navbar navbar-expand-lg bg-body-tertiary mb-3" style="background-color: #e3f2fd;">
@@ -109,7 +109,7 @@ else
 						</ul>
 						<div class="mb-3">
 							<RadzenButton ButtonType="ButtonType.Submit" Text="Edit Vehicle" IconPosition="IconPosition.Left"
-										  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="@NavigateToEditCar" />
+										  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="NavigateToEditCar" />
 						</div>
 					</div>
 				</div>
@@ -131,7 +131,7 @@ else
 								<div class="text-info font-weight-bold" style="font-size: 2em;">
 									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.InProgress)
 								</div>
-								<span class="font-weight-bold" style="font-size: 1em;">Servicess in progress</span>
+								<span class="font-weight-bold" style="font-size: 1em;">Services in progress</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-success font-weight-bold" style="font-size: 2em;">
@@ -148,7 +148,7 @@ else
 						</ul>
 						<div class="mb-3">
 							<RadzenButton ButtonType="ButtonType.Submit" Text="Go to details" IconPosition="IconPosition.Left"
-										  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="@NavigateToCarServiceDetails" />
+										  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="NavigateToCarServiceDetails" />
 						</div>
 					</div>
 				</div>
@@ -190,6 +190,7 @@ else
 
 	private void NavigateToCarServiceDetails()
 	{
-		NavigationManager.NavigateTo($"/");
+		NavigationManager.NavigateTo($"/carservicedetails/{_car.Id}");
 	}
+
 }

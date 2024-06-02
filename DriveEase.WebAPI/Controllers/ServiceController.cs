@@ -15,5 +15,19 @@ namespace DriveEase.WebAPI.Controllers
 
 			return Ok(await Mediator.Send(new GetAllServicesQuery()));
 		}
+
+		[HttpGet("car/{carId}")]
+		public async Task<IActionResult> GetServicesByCarId(int carId)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var result = await Mediator.Send(new GetServicesByCarIdQuery { CarId = carId });
+
+			if (result == null)
+				return NotFound();
+
+			return Ok(result);
+		}
 	}
 }

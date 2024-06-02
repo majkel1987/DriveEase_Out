@@ -4,28 +4,28 @@
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
 
-<PageTitle>Flota</PageTitle>
+<PageTitle>Vehicle Fleet</PageTitle>
 
 	@if (_cars == null)
 {
-	<p><em>Ładowanie aut....</em></p>
+	<p><em>Loading ....</em></p>
 }
 else if (_cars.Count() == 0)
 {
-	<p>Nie znaleziono żadnych samochodów!</p>
+	<p>No vehicles found!</p>
 }
 else
 {
 	<section class="container my-3">
 		<header class="d-flex justify-content-between align-items-center mb-2">
 			<div>
-				<h6 class="text-muted">Flota</h6>
-				<h3>Lista Pojazdów</h3>
+				<h6 class="text-muted">Vehicle fleet</h6>
+				<h3>Vehicles list</h3>
 			</div>
 		</header>
 
 		<div class="mb-3">
-			<RadzenButton Text="Dodaj nowy pojazd" Icon="add" IconPosition="IconPosition.Left"
+			<RadzenButton Text="Add new vehicle" Icon="add" IconPosition="IconPosition.Left"
 						  ButtonStyle="ButtonStyle.Primary" Click="@NavigateToAddNewCar" />
 		</div>
 
@@ -48,15 +48,15 @@ else
 					<Template Context="car">
 						@if (car.IsAvailable)
 						{
-							<RadzenBadge Text="Dostępny" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Success" />
+							<RadzenBadge Text="Available" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Success" />
 						}
 						else
 						{
-							<RadzenBadge Text="Niedostępny" Shade="Shade.Light" BadgeStyle="BadgeStyle.Danger" />
+							<RadzenBadge Text="Unavailable" Shade="Shade.Light" BadgeStyle="BadgeStyle.Danger" />
 						}
 					</Template>
 				</RadzenDataGridColumn>
-				<RadzenDataGridColumn TItem="CarDto" Title="Akcje">
+				<RadzenDataGridColumn TItem="CarDto" Title="Actions">
 					<Template Context="car">
 						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteCar(car.Id))" 
 							Size="ButtonSize.Small"/>
@@ -109,7 +109,5 @@ else
 		{
 			Console.WriteLine($"Błąd podczas usuwania pojazdu: {ex.Message}");
 		}
-
-
 	}
 }

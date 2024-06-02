@@ -12,5 +12,10 @@
 		{
 			return await _context.ServiceHistory.ToListAsync();
 		}
+
+		public async Task<IEnumerable<ServiceHistory>> GetServicesByCarId(int carId)
+		{
+			return await _context.ServiceHistory.Where(x => x.CarId == carId).ToListAsync();
+		}
 	}
 }

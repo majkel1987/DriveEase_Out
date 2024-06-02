@@ -1,0 +1,99 @@
+﻿@page "/carservicedetails/{id:int}"
+@inject IConfiguration Configuration
+@inject IServiceHttpRepository ServiceHttpRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>Services</PageTitle>
+
+@if (_serviceHistory == null)
+{
+	<p><em>Loading ....</em></p>
+}
+else if (_serviceHistory.Count() == 0)
+{
+	<p>No services found!</p>
+}
+else
+{
+	<section class="container my-3">
+		<header class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<h6 class="text-muted">Vehicle fleet</h6>
+				<h3>Vehicle service history:</h3>
+			</div>
+		</header>
+
+		<div class="mb-3">
+			<RadzenButton Text="Add new service" Icon="add" IconPosition="IconPosition.Left"
+						  ButtonStyle="ButtonStyle.Primary" Click="NavigateToAddNewService" />
+		</div>
+
+		<RadzenDataGrid PageSize="5" AllowPaging="true" ShowPagingSummary="true"
+						Data="@_serviceHistory" TItem="ServiceHistoryDto" ColumnWidth="80px">
+			<Columns>
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceType" Title="Service Type" />
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceDate" FormatString="{0:d}" Title="Service Start Date" />
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceEndDate" FormatString="{0:d}" Title="Service End Date" />
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="Cost" FormatString="{0:C}" Title="Cost" />
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceProvider" Title="Service Provider" />
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Title="Status">
+					<Template Context="service">
+						@switch(service.Status)
+						{
+							case ServiceStatus.InProgress:
+								<RadzenBadge Text="In Progress" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Warning" />
+								break;
+							case ServiceStatus.Planned:
+								<RadzenBadge Text="Planned" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Success" />
+								break;
+							case ServiceStatus.Completed:
+								<RadzenBadge Text="Completed" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Info" />
+								break;
+							case ServiceStatus.Cancelled:
+								<RadzenBadge Text="Cancelled" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Danger" />
+								break;
+							default:
+								<RadzenBadge Text="Unknown" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Warning" />
+								break;
+						}
+					</Template>
+				</RadzenDataGridColumn>
+				<RadzenDataGridColumn TItem="ServiceHistoryDto" Title="Actions">
+					<Template Context="serviceHistory">
+						<RadzenButton Icon="privacy_tip" ButtonStyle="ButtonStyle.Info" Click="@(args => GoToServiceDetails(serviceHistory.Id))"
+									  Size="ButtonSize.Small" />
+					</Template>
+				</RadzenDataGridColumn>
+			</Columns>
+		</RadzenDataGrid>
+	</section>
+}
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	private IEnumerable<ServiceHistoryDto> _serviceHistory;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			_serviceHistory = await ServiceHttpRepository.GetServicesByCarId(Id);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
+		}
+	}
+
+	private void NavigateToAddNewService()
+	{
+		NavigationManager.NavigateTo($"/addservice/{Id}");
+	}
+	
+	private void GoToServiceDetails(int id)
+	{
+		NavigationManager.NavigateTo($"/servicedetails/{id}");
+	}
+}
