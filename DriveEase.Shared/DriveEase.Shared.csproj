@@ -18,7 +18,6 @@
   <ItemGroup>
     <Folder Include="Account\Commands\" />
     <Folder Include="Account\Dtos\" />
-    <Folder Include="CarServices\Commands\" />
   </ItemGroup>
 
 </Project>

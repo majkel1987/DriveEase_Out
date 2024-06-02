@@ -13,6 +13,7 @@ namespace DriveEase.Domain.Entities
 		public string ServiceProvider { get; set; }
 		public string Notes { get; set; }
 		public bool IsFinished { get; set; }
+		public bool IsDeleted { get; set; } = false;
 		public ServiceStatus Status { get; set; }
 		public int CarId { get; set; }
 		public Car Car { get; set; }

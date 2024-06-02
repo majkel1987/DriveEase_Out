@@ -115,10 +115,9 @@ else
 
 		try
 		{
-			var cars = await CarHttpRepository.GetCars();
 			var services = await ServiceHttpRepository.GetAllServices();
-			_cars = cars;
 			_services = services;
+			await LoadCars();
 
 			LoadServiceCount();
 		}
@@ -137,5 +136,19 @@ else
 		_todayServices = _services.Count(x => x.ServiceDate.Date == todayServices && x.IsFinished == false);
 		_tomorrowServices = _services.Count(x => x.ServiceDate.Date == tomorrowServices && x.IsFinished == false);
 		_laterServices = _services.Count(x => x.ServiceDate.Date > tomorrowServices && x.IsFinished == false);
+	}
+
+	private async Task LoadCars()
+	{
+		try
+		{
+			var cars = await CarHttpRepository.GetCars();
+			_cars = cars.Where(c => c.IsDeleted == false);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
+		}
+		StateHasChanged();
 	}
 }

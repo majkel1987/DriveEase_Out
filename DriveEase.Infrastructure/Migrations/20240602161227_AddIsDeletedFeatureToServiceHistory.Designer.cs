@@ -4,6 +4,7 @@ using DriveEase.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriveEase.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240602161227_AddIsDeletedFeatureToServiceHistory")]
+    partial class AddIsDeletedFeatureToServiceHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -315,7 +318,7 @@ namespace DriveEase.Infrastructure.Migrations
                             IsAvailable = false,
                             IsDeleted = false,
                             LicensePlate = "WX 982733",
-                            LogoURL = "content/images/mercedes-logo.jpg",
+                            LogoURL = "content/images/BMW.PNG",
                             Mileage = "21402",
                             Model = "S Class",
                             Power = "140",
@@ -902,9 +905,6 @@ namespace DriveEase.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsFinished")
                         .HasColumnType("bit");
 
@@ -945,7 +945,6 @@ namespace DriveEase.Infrastructure.Migrations
                             CarId = 1,
                             Cost = 150m,
                             Description = "Change oil and filter",
-                            IsDeleted = false,
                             IsFinished = true,
                             Notes = "Car is running smoothly",
                             ServiceDate = new DateTime(2023, 3, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -960,7 +959,6 @@ namespace DriveEase.Infrastructure.Migrations
                             CarId = 2,
                             Cost = 200m,
                             Description = "Rotate tires",
-                            IsDeleted = false,
                             IsFinished = true,
                             Notes = "Tires are wearing evenly",
                             ServiceDate = new DateTime(2023, 12, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -975,7 +973,6 @@ namespace DriveEase.Infrastructure.Migrations
                             CarId = 3,
                             Cost = 1000m,
                             Description = "Inspect brakes",
-                            IsDeleted = false,
                             IsFinished = false,
                             Notes = "Brakes are in bad condition",
                             ServiceDate = new DateTime(2022, 5, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -990,7 +987,6 @@ namespace DriveEase.Infrastructure.Migrations
                             CarId = 3,
                             Cost = 300m,
                             Description = "Recharge AC",
-                            IsDeleted = false,
                             IsFinished = false,
                             Notes = "AC is working properly",
                             ServiceDate = new DateTime(2022, 8, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1004,44 +1000,13 @@ namespace DriveEase.Infrastructure.Migrations
                             CarId = 2,
                             Cost = 500m,
                             Description = "Inspect engine",
-                            IsDeleted = false,
                             IsFinished = true,
                             Notes = "Engine is in good condition",
                             ServiceDate = new DateTime(2024, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ServiceEndDate = new DateTime(2024, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ServiceProvider = "Auto Care",
                             ServiceType = "Engine Inspection",
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CarId = 2,
-                            Cost = 1200m,
-                            Description = "Inspect vehicle",
-                            IsDeleted = false,
-                            IsFinished = true,
-                            Notes = "Service cancelled",
-                            ServiceDate = new DateTime(2024, 4, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ServiceEndDate = new DateTime(2024, 4, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ServiceProvider = "Auto Care",
-                            ServiceType = "Inspection",
-                            Status = 3
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CarId = 2,
-                            Cost = 1200m,
-                            Description = "Inspect vehicle",
-                            IsDeleted = false,
-                            IsFinished = true,
-                            Notes = "Service cancelled",
-                            ServiceDate = new DateTime(2024, 5, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ServiceEndDate = new DateTime(2024, 5, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ServiceProvider = "Auto Care",
-                            ServiceType = "Inspection",
-                            Status = 1
+                            Status = 2
                         });
                 });
 

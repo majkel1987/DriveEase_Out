@@ -75,16 +75,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		try
-		{
-			var cars = await CarHttpRepository.GetCars();
-			_cars = cars;
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
-		}
-		StateHasChanged();
+		await LoadCars();
 	}
 
 	private void NavigateToAddNewCar()
@@ -102,12 +93,25 @@ else
 		try
 		{
 			await CarHttpRepository.DeleteCar(id);
-			_cars = await CarHttpRepository.GetCars();
-			StateHasChanged();
+			await LoadCars();
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Błąd podczas usuwania pojazdu: {ex.Message}");
 		}
+	}
+
+	private async Task LoadCars()
+	{
+		try
+		{
+			var cars = await CarHttpRepository.GetCars();
+			_cars = cars.Where(c => c.IsDeleted == false);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
+		}
+		StateHasChanged();
 	}
 }

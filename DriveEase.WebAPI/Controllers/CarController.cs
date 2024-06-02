@@ -1,7 +1,6 @@
 ﻿using DriveEase.Application.Cars.Queries;
 using DriveEase.Shared.Cars.Commands;
 using DriveEase.Shared.Cars.Queries;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DriveEase.WebAPI.Controllers
@@ -13,7 +12,7 @@ namespace DriveEase.WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetCars()
 		{
-			if(!ModelState.IsValid)
+			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			return Ok(await Mediator.Send(new GetCarsQuery()));
@@ -59,7 +58,7 @@ namespace DriveEase.WebAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateCar(int id, UpdateCarCommand command)
+		public async Task<IActionResult> UpdateCar(UpdateCarCommand command)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -96,9 +95,8 @@ namespace DriveEase.WebAPI.Controllers
 
 			if (result == null)
 				return NotFound();
-			
+
 			return Ok(result);
 		}
 	}
 }
-	

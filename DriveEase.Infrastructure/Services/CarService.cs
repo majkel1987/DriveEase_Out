@@ -23,7 +23,7 @@
 			if (carToDelete == null)
 				return false;
 
-			_context.Cars.Remove(carToDelete);
+			carToDelete.IsDeleted = true;
 			await _context.SaveChangesAsync();
 
 			return true;

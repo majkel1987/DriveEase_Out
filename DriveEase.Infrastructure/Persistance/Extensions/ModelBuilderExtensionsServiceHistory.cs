@@ -74,7 +74,35 @@ namespace DriveEase.Infrastructure.Persistance.Extensions
 					ServiceProvider = "Auto Care",
 					Notes = "Engine is in good condition",
 					IsFinished = true,
-					Status = ServiceStatus.Completed
+					Status = ServiceStatus.Planned
+				},
+				new ServiceHistory
+				{
+					Id = 6,
+					CarId = 2,
+					ServiceDate = new DateTime(2024, 4, 16),
+					ServiceEndDate = new DateTime(2024, 4, 18),
+					ServiceType = "Inspection",
+					Description = "Inspect vehicle",
+					Cost = 1200,
+					ServiceProvider = "Auto Care",
+					Notes = "Service cancelled",
+					IsFinished = true,
+					Status = ServiceStatus.Cancelled
+				},
+				new ServiceHistory
+				{
+					Id = 7,
+					CarId = 2,
+					ServiceDate = new DateTime(2024, 5, 16),
+					ServiceEndDate = new DateTime(2024, 5, 18),
+					ServiceType = "Inspection",
+					Description = "Inspect vehicle",
+					Cost = 1200,
+					ServiceProvider = "Auto Care",
+					Notes = "Service cancelled",
+					IsFinished = true,
+					Status = ServiceStatus.InProgress
 				}
 				);
 		}
