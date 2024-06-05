@@ -35,6 +35,18 @@
 			return await _context.ServiceHistory.ToListAsync();
 		}
 
+		public async Task<ServiceHistory> GetServiceById(int serviceId)
+		{
+			var service = await _context.ServiceHistory
+				.FirstOrDefaultAsync(x => x.Id == serviceId);
+
+			if (service == null)
+			{
+				return null;
+			}
+			return service;
+		}
+
 		public async Task<IEnumerable<ServiceHistory>> GetServicesByCarId(int carId)
 		{
 			return await _context.ServiceHistory

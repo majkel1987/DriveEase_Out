@@ -1,0 +1,201 @@
+﻿@page "/addservice/{CarId:int}"
+@page "/editservice/{ServiceId:int}"
+@inject IServiceHttpRepository ServiceHttpRepository
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+@attribute [StreamRendering]
+
+<PageTitle>@(!_isEdit ? "Add new service" : "Edit service")</PageTitle>
+
+<section class="container my-3">
+	<header class="d-flex justify-content-between align-items-center mb-2">
+		<div>
+			<h6 class="text-muted">Vehicle Fleet</h6>
+			<h3>@(!_isEdit ? "Add new service" : "Edit service")</h3>
+		</div>
+	</header>
+	<EditForm Model="_newService" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+		<DataAnnotationsValidator />
+		<RadzenRow>
+			<RadzenColumn Size="6">
+				<RadzenStack Class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+
+					<RadzenFormField Text="Service Date:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+						<ChildContent>
+							<RadzenDatePicker @bind-Value="@_newService.ServiceDate" DateFormat="dd.MM.yyyy" ShowCalendarWeek />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.ServiceDate)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Service End Date:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenDatePicker @bind-Value="@_newService.ServiceEndDate" DateFormat="dd.MM.yyyy" ShowCalendarWeek />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.ServiceEndDate)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Service Provider:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newService.ServiceProvider" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.ServiceProvider)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Service Type:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_newService.ServiceType" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.ServiceType)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Description:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextArea @bind-Value="@_newService.Description" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.Description)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Koszt:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenNumeric @bind-Value="@_newService.Cost" Format="c2" Min="0" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.Cost)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Notes:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextArea @bind-Value="@_newService.Notes" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _newService.Notes)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Is service finished?" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenRadioButtonList @bind-Value="@_newService.IsFinished" TValue="bool" class="rz-m-4 rz-mt-8">
+								<Items>
+									<RadzenRadioButtonListItem Text="Tak" Value="true" />
+									<RadzenRadioButtonListItem Text="Nie" Value="false" />
+								</Items>
+							</RadzenRadioButtonList>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Service status:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<RadzenDropDown Data=@_serviceStatus TextProperty="Name" ValueProperty="Value" @bind-Value="@_newService.Status"
+											Change="@(args => UpdateValue(args, nameof(_newService.Status)))" Name="Status" />
+						</RadzenFormField>
+
+					</RadzenStack>
+				</RadzenColumn>
+			</RadzenRow>
+			<div class="mb-3">
+				<RadzenButton ButtonType="ButtonType.Submit" Text="Save" IconPosition="IconPosition.Left"
+							  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="@OnValidSubmit" />
+			</div>
+		</EditForm>
+	</section>
+
+	@code {
+	[Parameter]
+	public int? ServiceId { get; set; }
+	[Parameter]
+	public int CarId { get; set; }
+
+	private bool _isEdit => ServiceId.HasValue;
+	private bool _isSubmitting = false;
+	private CreateServiceDto _newService = new();
+	private IEnumerable<EnumValue> _serviceStatus;
+
+	protected override async void OnInitialized()
+	{
+		_serviceStatus = GetEnumValues<ServiceStatus>();
+
+		if (_isEdit)
+		{
+			var egsistingService = await ServiceHttpRepository.GetServiceById(ServiceId.Value);
+			_newService = egsistingService.Adapt<CreateServiceDto>();
+		}
+		else
+		{
+			_newService.CarId = CarId;
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task OnValidSubmit()
+	{
+		if (_isSubmitting)
+		{
+			return;
+		}
+
+		_isSubmitting = true;
+		var serviceToUpdate = _newService.Adapt<UpdateServiceDto>();
+
+		try
+		{
+			if (_isEdit)
+			{
+				await ServiceHttpRepository.EditService(ServiceId.Value, serviceToUpdate);
+			}
+			else
+			{
+				await ServiceHttpRepository.CreateService(_newService);
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error while saving data: {ex.Message}");
+		}
+		finally
+		{
+			_isSubmitting = false;
+		}
+
+		NavigationManager.NavigateTo($"carservicedetails/{CarId}");
+	}
+
+	private void OnInvalidSubmit()
+	{
+		Console.WriteLine("Invalid submit");
+	}
+
+	private IEnumerable<EnumValue> GetEnumValues<T>() where T : Enum
+	{
+		return Enum.GetValues(typeof(T))
+			.Cast<T>()
+			.Select(e => new EnumValue { Name = e.ToString(), Value = e })
+			.ToList();
+	}
+
+	private void UpdateValue(object value, string propertyName)
+	{
+		var property = _newService.GetType().GetProperty(propertyName);
+
+		if (property != null)
+		{
+			property.SetValue(_newService, value);
+			StateHasChanged();
+		}
+	}
+
+	class EnumValue
+	{
+		public string Name { get; set; }
+		public object Value { get; set; }
+	}
+
+}

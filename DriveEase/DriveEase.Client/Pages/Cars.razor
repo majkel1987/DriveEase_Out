@@ -6,9 +6,9 @@
 
 <PageTitle>Vehicle Fleet</PageTitle>
 
-	@if (_cars == null)
+@if (_cars == null)
 {
-	<p><em>Loading ....</em></p>
+	<Spinner />
 }
 else if (_cars.Count() == 0)
 {
@@ -30,7 +30,7 @@ else
 		</div>
 
 		<RadzenDataGrid PageSize="5" AllowPaging="true" ShowPagingSummary="true"
-			Data="@_cars" TItem="CarDto" ColumnWidth="80px">
+						Data="@_cars" TItem="CarDto" ColumnWidth="80px">
 			<Columns>
 				<RadzenDataGridColumn TItem="CarDto" Property="Brand" Title="Brand" />
 				<RadzenDataGridColumn TItem="CarDto" Property="Model" Title="Model">
@@ -58,9 +58,11 @@ else
 				</RadzenDataGridColumn>
 				<RadzenDataGridColumn TItem="CarDto" Title="Actions">
 					<Template Context="car">
-						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteCar(car.Id))" 
-							Size="ButtonSize.Small"/>
 						<RadzenButton Icon="privacy_tip" ButtonStyle="ButtonStyle.Info" Click="@(args => GoToCarDetails(car.Id))"
+									  Size="ButtonSize.Small" />
+						<RadzenButton Icon="build" ButtonStyle="ButtonStyle.Warning" Click="@(args => GoToEditCar(car.Id))"
+									  Size="ButtonSize.Small" />
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteCar(car.Id))"
 									  Size="ButtonSize.Small" />
 					</Template>
 				</RadzenDataGridColumn>
@@ -86,6 +88,11 @@ else
 	private void GoToCarDetails(int id)
 	{
 		NavigationManager.NavigateTo($"/car/{id}");
+	}
+
+	private void GoToEditCar(int id)
+	{
+		NavigationManager.NavigateTo($"/editcar/{id}");
 	}
 
 	private async Task DeleteCar(int id)

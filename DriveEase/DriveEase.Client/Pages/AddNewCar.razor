@@ -5,11 +5,13 @@
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
 
+<PageTitle>@(!_isEdit ? "Add new vehicle" : "Edit vehicle")</PageTitle>
+
 <section class="container my-3">
 	<header class="d-flex justify-content-between align-items-center mb-2">
 		<div>
-			<h6 class="text-muted">Flota</h6>
-			<h3>@(!_isEdit ? "Dodawanie nowego pojazdu" : "Edycja danych pojazdu")</h3>
+			<h6 class="text-muted">Vehicle Fleet</h6>
+			<h3>@(!_isEdit ? "Add new vehicle" : "Edit vehicle")</h3>
 		</div>
 	</header>
 	<div class="rz-p-0 rz-p-md-12">
@@ -177,7 +179,7 @@
 				_carFeatures = string.Join(",", _newCar.Features);
 			}
 		}
-
+		StateHasChanged();
 	}
 
 	private IEnumerable<EnumValue> GetEnumValues<T>() where T : Enum

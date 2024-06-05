@@ -1,0 +1,111 @@
+﻿@page "/servicedetails/{id:int}"
+@inject IConfiguration Configuration
+@inject IServiceHttpRepository ServiceHttpRepository
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+
+<PageTitle>Service Details</PageTitle>
+
+@if (_service == null)
+{
+	<Spinner />
+}
+else
+{
+	<section class="container my-3">
+		<header class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<h6 class="text-muted">Vehicle fleet</h6>
+				<h3>Service Details</h3>
+			</div>
+		</header>
+	</section>
+	<main class="row">
+   <section class="col-md-6 mb-4">
+			<div class="card shadow-sm" style="background-color: white;">
+				<h5 class="card-header">
+					Service Details
+				</h5>
+				<div class="card-body">
+					<ul class="list-unstyled">
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Service Type:</span>
+							<span>@_service.ServiceType</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Service Date:</span>
+							<span>@_service.ServiceDate.ToString("ddd dd MMMM yyyy")</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Service End Date:</span>
+							<span>@_service.ServiceEndDate?.ToString("ddd dd MMMM yyyy")</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Decsription:</span>
+							<span>@_service.Description</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Cost:</span>
+							<span>@_service.Cost.ToString("C2")</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Service Provider:</span>
+							<span>@_service.ServiceProvider</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Status:</span>
+							<span>
+								@switch (_service.Status)
+								{
+									case ServiceStatus.InProgress:
+										<RadzenBadge Text="In Progress" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Warning" />
+										break;
+									case ServiceStatus.Planned:
+										<RadzenBadge Text="Planned" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Success" />
+										break;
+									case ServiceStatus.Completed:
+										<RadzenBadge Text="Completed" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Info" />
+										break;
+									case ServiceStatus.Cancelled:
+										<RadzenBadge Text="Cancelled" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Danger" />
+										break;
+									default:
+										<RadzenBadge Text="Unknown" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Warning" />
+										break;
+								}
+							</span>
+						</li>
+					</ul>
+					<div class="mb-3">
+						<RadzenButton ButtonType="ButtonType.Submit" Text="Edit Service" IconPosition="IconPosition.Left"
+									  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="NavigateToEditService" />
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+}
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	private ServiceHistoryDto _service;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			_service = await ServiceHttpRepository.GetServiceById(Id);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error while loading data: {ex.Message}");
+		}
+	}
+
+	private void NavigateToEditService()
+	{
+		NavigationManager.NavigateTo($"/editservice/{_service.Id}");
+	}
+}

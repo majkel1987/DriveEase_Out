@@ -8,7 +8,7 @@
 
 @if (_car == null)
 {
-	<p><em>Loading...</em></p>
+	<Spinner/>
 }
 else
 {
@@ -123,25 +123,25 @@ else
 						<ul class="list-unstyled d-flex justify-content-between">
 							<li class="col text-center">
 								<div class="text-danger font-weight-bold" style="font-size: 2em;">
-									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.Planned)
+									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.Planned && x.IsDeleted == false)
 								</div>
 								<span class="font-weight-bold" style="font-size: 1em;">Planned services</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-info font-weight-bold" style="font-size: 2em;">
-									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.InProgress)
+									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.InProgress && x.IsDeleted == false)
 								</div>
 								<span class="font-weight-bold" style="font-size: 1em;">Services in progress</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-success font-weight-bold" style="font-size: 2em;">
-									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.Completed)
+									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.Completed && x.IsDeleted == false)
 								</div>
 								<span class="font-weight-bold" style="font-size: 1em;">Completed services</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-secondary font-weight-bold" style="font-size: 2em;">
-									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.Cancelled)
+									@_car.ServiceHistory.Count(x => x.Status == ServiceStatus.Cancelled && x.IsDeleted == false)
 								</div>
 								<span class="font-weight-bold" style="font-size: 1em;">Cancelled services</span>
 							</li>

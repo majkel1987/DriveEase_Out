@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\DriveEase.Client\Pages\Spinner.razor" Link="Spinner.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DriveEase.Client\DriveEase.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.1" />
   </ItemGroup>

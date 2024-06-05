@@ -2,16 +2,30 @@
 @inject IConfiguration Configuration
 @inject IServiceHttpRepository ServiceHttpRepository
 @inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+@attribute [StreamRendering]
+
 
 <PageTitle>Services</PageTitle>
 
 @if (_serviceHistory == null)
 {
-	<p><em>Loading ....</em></p>
+	<Spinner />
 }
 else if (_serviceHistory.Count() == 0)
 {
-	<p>No services found!</p>
+	<section class="container my-3">
+		<header class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<h6 class="text-muted">Vehicle fleet</h6>
+				<h3>Vehicle service history:</h3>
+			</div>
+		</header>
+	</section>
+	<div class="mb-3">
+		<RadzenButton Text="Add new service" Icon="add" IconPosition="IconPosition.Left"
+					  ButtonStyle="ButtonStyle.Primary" Click="NavigateToAddNewService" />
+	</div>
 }
 else
 {
@@ -32,13 +46,11 @@ else
 						Data="@_serviceHistory" TItem="ServiceHistoryDto" ColumnWidth="80px">
 			<Columns>
 				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceType" Title="Service Type" />
-				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceDate" FormatString="{0:d}" Title="Service Start Date" />
-				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceEndDate" FormatString="{0:d}" Title="Service End Date" />
 				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="Cost" FormatString="{0:C}" Title="Cost" />
 				<RadzenDataGridColumn TItem="ServiceHistoryDto" Property="ServiceProvider" Title="Service Provider" />
 				<RadzenDataGridColumn TItem="ServiceHistoryDto" Title="Status">
 					<Template Context="service">
-						@switch(service.Status)
+						@switch (service.Status)
 						{
 							case ServiceStatus.InProgress:
 								<RadzenBadge Text="In Progress" Shade="Shade.Dark" BadgeStyle="BadgeStyle.Warning" />
@@ -62,6 +74,10 @@ else
 					<Template Context="serviceHistory">
 						<RadzenButton Icon="privacy_tip" ButtonStyle="ButtonStyle.Info" Click="@(args => GoToServiceDetails(serviceHistory.Id))"
 									  Size="ButtonSize.Small" />
+						<RadzenButton Icon="build" ButtonStyle="ButtonStyle.Warning" Click="@(args => GoToEditService(serviceHistory.Id))"
+									  Size="ButtonSize.Small" />
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteService(serviceHistory.Id))"
+									  Size="ButtonSize.Small" />
 					</Template>
 				</RadzenDataGridColumn>
 			</Columns>
@@ -79,7 +95,7 @@ else
 	{
 		try
 		{
-			_serviceHistory = await ServiceHttpRepository.GetServicesByCarId(Id);
+			await LoadServices();
 		}
 		catch (Exception ex)
 		{
@@ -91,9 +107,41 @@ else
 	{
 		NavigationManager.NavigateTo($"/addservice/{Id}");
 	}
-	
+
 	private void GoToServiceDetails(int id)
 	{
 		NavigationManager.NavigateTo($"/servicedetails/{id}");
+	}
+
+	private void GoToEditService(int id)
+	{
+		NavigationManager.NavigateTo($"/editservice/{id}");
+	}
+
+	private async Task DeleteService(int id)
+	{
+		try
+		{
+			await ServiceHttpRepository.DeleteService(id);
+			await LoadServices();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas usuwania pojazdu: {ex.Message}");
+		}
+	}
+
+	private async Task LoadServices()
+	{
+		try
+		{
+			var services = await ServiceHttpRepository.GetServicesByCarId(Id);
+			_serviceHistory = services.Where(c => c.IsDeleted == false);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
+		}
+		StateHasChanged();
 	}
 }

@@ -7,6 +7,7 @@ namespace DriveEase.Shared.CarServices.Commands
 {
 	public class CreateServiceCommand : IRequest<CreateServiceDto>
 	{
+		public int Id { get; set; }
 		[Required(ErrorMessage = "Field 'Service date' is required")]
 		public DateTime ServiceDate { get; set; }
 

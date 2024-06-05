@@ -16,7 +16,7 @@ else
 		<header class="d-flex justify-content-between align-items-center mb-2">
 			<div>
 				<h6 class="text-muted">Dashboard</h6>
-				<h3>Cześć Tony!</h3>
+				<h3>Hi Tony!</h3>
 			</div>
 		</header>
 		<main class="row">
@@ -48,48 +48,48 @@ else
 			<section class="col-md-6 mb-4">
 				<div class="card shadow-sm mb-4" style="background-color: white;">
 					<h5 class="card-header">
-						Podsumowanie
+						Summary
 					</h5>
 					<div class="card-body">
 						<ul class="list-unstyled d-flex justify-content-between">
 							<li class="col text-center">
 								<div class="text-danger font-weight-bold" style="font-size: 2.2em;">5</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Rezerwacje</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Reservations</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-primary font-weight-bold" style="font-size: 2.2em;">@_cars.Count()</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Pojazdy</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Vehicles</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-success font-weight-bold" style="font-size: 2.2em;">5</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Klienci</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Clients</span>
 							</li>
 						</ul>
 					</div>
 				</div>
 				<div class="card shadow-sm mb-4" style="background-color: white;">
 					<h5 class="card-header">
-						Nadchodzące serwisy
+						Upcoming services
 					</h5>
 					<div class="card-body">
 						<ul class="list-unstyled d-flex justify-content-between">
 							<li class="col text-center">
 								<div class="text-danger font-weight-bold" style="font-size: 2.2em;">@_todayServices</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Dziś</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Today</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-primary font-weight-bold" style="font-size: 2.2em;">@_tomorrowServices</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Jutro</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Tomorrow</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-secondary font-weight-bold" style="font-size: 2.2em;">@_laterServices</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Później</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Later</span>
 							</li>
 							<li class="col text-center">
 								<div class="text-success font-weight-bold" style="font-size: 2.2em;">
-									@_services.Where(x => x.IsFinished == true).Count()
+									@_services.Where(x => x.IsFinished == true && x.IsDeleted == false).Count()
 								</div>
-								<span class="font-weight-bold" style="font-size: 1.1em;">Zakończone</span>
+								<span class="font-weight-bold" style="font-size: 1.1em;">Ended</span>
 							</li>
 						</ul>
 					</div>
@@ -133,9 +133,9 @@ else
 		var todayServices = DateTime.Today;
 		var tomorrowServices = DateTime.Today.AddDays(1);
 
-		_todayServices = _services.Count(x => x.ServiceDate.Date == todayServices && x.IsFinished == false);
-		_tomorrowServices = _services.Count(x => x.ServiceDate.Date == tomorrowServices && x.IsFinished == false);
-		_laterServices = _services.Count(x => x.ServiceDate.Date > tomorrowServices && x.IsFinished == false);
+		_todayServices = _services.Count(x => x.ServiceDate.Date == todayServices && x.IsFinished == false && x.IsDeleted == false);
+		_tomorrowServices = _services.Count(x => x.ServiceDate.Date == tomorrowServices && x.IsFinished == false && x.IsDeleted == false);
+		_laterServices = _services.Count(x => x.ServiceDate.Date > tomorrowServices && x.IsFinished == false && x.IsDeleted == false);
 	}
 
 	private async Task LoadCars()
