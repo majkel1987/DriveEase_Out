@@ -1,8 +1,12 @@
 ﻿@page "/cars"
 @inject ICarHttpRepository CarHttpRepository
 @inject NavigationManager NavigationManager
+@inject DialogService DialogService
+@inject NotificationService NotificationService
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
+
+<RadzenComponents />
 
 <PageTitle>Vehicle Fleet</PageTitle>
 
@@ -29,7 +33,7 @@ else
 						  ButtonStyle="ButtonStyle.Primary" Click="@NavigateToAddNewCar" />
 		</div>
 
-		<RadzenDataGrid PageSize="5" AllowPaging="true" ShowPagingSummary="true"
+		<RadzenDataGrid PageSize="8" AllowPaging="true" ShowPagingSummary="true"
 						Data="@_cars" TItem="CarDto" ColumnWidth="80px">
 			<Columns>
 				<RadzenDataGridColumn TItem="CarDto" Property="Brand" Title="Brand" />
@@ -62,7 +66,7 @@ else
 									  Size="ButtonSize.Small" />
 						<RadzenButton Icon="build" ButtonStyle="ButtonStyle.Warning" Click="@(args => GoToEditCar(car.Id))"
 									  Size="ButtonSize.Small" />
-						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteCar(car.Id))"
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => ConfirmDeleteCar(car.Id))"
 									  Size="ButtonSize.Small" />
 					</Template>
 				</RadzenDataGridColumn>
@@ -95,16 +99,28 @@ else
 		NavigationManager.NavigateTo($"/editcar/{id}");
 	}
 
+	private async Task ConfirmDeleteCar(int id)
+	{
+		var confirmationResult = await DialogService.Confirm("Are you sure you want to delete this vehicle?", "Delete vehicle",
+									new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+		if (confirmationResult == true)
+		{
+			await DeleteCar(id);
+		}
+	}
+	
 	private async Task DeleteCar(int id)
 	{
 		try
 		{
 			await CarHttpRepository.DeleteCar(id);
+			NotificationService.Notify(NotificationSeverity.Success, "Success", "Vehicle deleted successfully!");
 			await LoadCars();
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Błąd podczas usuwania pojazdu: {ex.Message}");
+			NotificationService.Notify(NotificationSeverity.Error, "Error", $"An error occurred while deleting the vehicle: {ex.Message}");
 		}
 	}
 

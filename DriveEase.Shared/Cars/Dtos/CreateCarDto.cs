@@ -1,5 +1,4 @@
-﻿using DriveEase.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DriveEase.Shared.Cars.Dtos
 {
@@ -35,7 +34,7 @@ namespace DriveEase.Shared.Cars.Dtos
 
 		[Required(ErrorMessage = "Pole 'Rodzaj paliwa' jest wymagane!")]
 		[Display(Name = "Fuel type")]
-		public FuelTypeEngines FuelType { get; set; }
+		public string FuelType { get; set; }
 
 		[Display(Name = "Transmission")]
 		public string Transmission { get; set; }
@@ -64,6 +63,6 @@ namespace DriveEase.Shared.Cars.Dtos
 		public IList<string> Features { get; set; }
 
 		[Display(Name = "Status")]
-		public CarStatus Status { get; set; }
+		public string Status { get; set; }
 	}
 }

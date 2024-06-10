@@ -2,9 +2,12 @@
 @inject IConfiguration Configuration
 @inject IServiceHttpRepository ServiceHttpRepository
 @inject NavigationManager NavigationManager
+@inject DialogService DialogService
+@inject NotificationService NotificationService
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
 
+<RadzenComponents />
 
 <PageTitle>Services</PageTitle>
 
@@ -76,7 +79,7 @@ else
 									  Size="ButtonSize.Small" />
 						<RadzenButton Icon="build" ButtonStyle="ButtonStyle.Warning" Click="@(args => GoToEditService(serviceHistory.Id))"
 									  Size="ButtonSize.Small" />
-						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => DeleteService(serviceHistory.Id))"
+						<RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@(args => ConfirmDeleteService(serviceHistory.Id))"
 									  Size="ButtonSize.Small" />
 					</Template>
 				</RadzenDataGridColumn>
@@ -118,18 +121,31 @@ else
 		NavigationManager.NavigateTo($"/editservice/{id}");
 	}
 
+	private async Task ConfirmDeleteService(int id)
+	{
+		var confirmationResult = await DialogService.Confirm("Are you sure you want to delete this service?", "Delete service",
+										new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+		if (confirmationResult == true)
+		{
+			await DeleteService(id);
+		}
+	}
+
 	private async Task DeleteService(int id)
 	{
 		try
 		{
 			await ServiceHttpRepository.DeleteService(id);
+			NotificationService.Notify(NotificationSeverity.Success, "Success!", "Service has been deleted successfully");
 			await LoadServices();
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Błąd podczas usuwania pojazdu: {ex.Message}");
+			NotificationService.Notify(NotificationSeverity.Error, "Error", $"An error occurred while deleting the service: {ex.Message}");
 		}
 	}
+
 
 	private async Task LoadServices()
 	{

@@ -1,5 +1,4 @@
-﻿using DriveEase.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DriveEase.Shared.Cars.Dtos
 {
@@ -28,6 +27,6 @@ namespace DriveEase.Shared.Cars.Dtos
 		public IList<string> Features { get; set; }
 
 		[Display(Name = "Status")]
-		public CarStatus Status { get; set; }
+		public string Status { get; set; }
 	}
 }

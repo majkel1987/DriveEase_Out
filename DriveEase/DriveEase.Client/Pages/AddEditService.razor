@@ -2,8 +2,12 @@
 @page "/editservice/{ServiceId:int}"
 @inject IServiceHttpRepository ServiceHttpRepository
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
+
+<RadzenComponents />
 
 <PageTitle>@(!_isEdit ? "Add new service" : "Edit service")</PageTitle>
 
@@ -150,22 +154,25 @@
 			if (_isEdit)
 			{
 				await ServiceHttpRepository.EditService(ServiceId.Value, serviceToUpdate);
+				NotificationService.Notify(NotificationSeverity.Success, "Service updated successfully");
+
 			}
 			else
 			{
 				await ServiceHttpRepository.CreateService(_newService);
+				NotificationService.Notify(NotificationSeverity.Success, "Service added successfully");
 			}
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Error while saving data: {ex.Message}");
+			NotificationService.Notify(NotificationSeverity.Error, "An error occurred while saving the service");
 		}
 		finally
 		{
 			_isSubmitting = false;
 		}
 
-		NavigationManager.NavigateTo($"carservicedetails/{CarId}");
+		NavigationManager.NavigateTo($"carservicedetails/{_newService.CarId}");
 	}
 
 	private void OnInvalidSubmit()

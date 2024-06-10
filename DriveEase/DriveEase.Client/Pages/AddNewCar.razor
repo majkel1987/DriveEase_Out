@@ -2,8 +2,11 @@
 @page "/editcar/{CarId:int}"
 @inject ICarHttpRepository CarHttpRepository
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
+
+<RadzenComponents />
 
 <PageTitle>@(!_isEdit ? "Add new vehicle" : "Edit vehicle")</PageTitle>
 
@@ -90,8 +93,8 @@
 					<RadzenStack Class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
 
 						<RadzenFormField Text="Skrzynia biegów" AllowFloatingLabel="false" Variant=Variant.Outlined>
-							<RadzenDropDown Data=@_transmissionType Disabled=@(_isEdit) TextProperty="Name" ValueProperty="Value" 
-								@bind-Value="@_newCar.Transmission" Change="@(args => UpdateValue(args, nameof(_newCar.Transmission)))" Name="Transmission" />
+							<RadzenDropDown Data=@_transmissionType Disabled=@(_isEdit) TextProperty="Name" ValueProperty="Value"
+											@bind-Value="@_newCar.Transmission" Change="@(args => UpdateValue(args, nameof(_newCar.Transmission)))" Name="Transmission" />
 						</RadzenFormField>
 
 						<RadzenFormField Text="Typ silnika" AllowFloatingLabel="false" Variant=Variant.Outlined>
@@ -186,7 +189,7 @@
 	{
 		return Enum.GetValues(typeof(T))
 			.Cast<T>()
-			.Select(e => new EnumValue { Name = e.ToString(), Value = e })
+			.Select(e => new EnumValue { Name = e.ToString(), Value = e.ToString() })
 			.ToList();
 	}
 
@@ -201,19 +204,23 @@
 			if (_isEdit)
 			{
 				await CarHttpRepository.EditCar(CarId.Value, carToUpdate);
+				NotificationService.Notify(NotificationSeverity.Success, "Vehicle updated successfully");
 			}
 			else
 			{
 				await CarHttpRepository.CreateCar(_newCar);
+				NotificationService.Notify(NotificationSeverity.Success, "Vehicle added successfully");
 
 			}
-			
+
 			NavigationManager.NavigateTo("/cars");
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine("Error:" + ex.Message);
+			NotificationService.Notify(NotificationSeverity.Error, $"An error occurred while saving the vehicle: {ex.Message}", duration: 10000);
 		}
+
+		StateHasChanged();
 
 	}
 
@@ -228,7 +235,7 @@
 
 		if (property != null)
 		{
-			property.SetValue(_newCar, value);
+			property.SetValue(_newCar, value.ToString());
 			StateHasChanged();
 		}
 	}
