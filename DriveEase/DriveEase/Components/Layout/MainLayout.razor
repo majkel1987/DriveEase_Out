@@ -3,27 +3,18 @@
 <RadzenComponents />
 
 <RadzenLayout>
-	<RadzenHeader>
-		<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-			@* <LoginDisplay /> *@
-		</RadzenStack>
-	</RadzenHeader>
-	<RadzenSidebar @bind-Expanded="@sidebar1Expanded">
-		<RadzenPanelMenu>
-			<RadzenPanelMenuItem Text="Dashboard" Path="/" Icon="home" />
-			<RadzenPanelMenuItem Text="Vehicle fleet" Path="cars" Icon="motorcycle" />
-			<RadzenPanelMenuItem Text="Registration" Path="rejestracja" Icon="account_box" />
-		</RadzenPanelMenu>
-	</RadzenSidebar>
-	<RadzenBody>
-		<div class="rz-p-4">
-			@Body
-		</div>
-	</RadzenBody>
-	<RadzenFooter>
-	</RadzenFooter>
+    <Menu></Menu>
+    <RadzenBody>
+        <div class="rz-p-4">
+            @Body
+        </div>
+    </RadzenBody>
+    <RadzenFooter>
+        By Michal Sarnacki @DateTime.Now.Year
+    </RadzenFooter>
 </RadzenLayout>
 
+
 @code {
-	bool sidebar1Expanded = true;
+	
 }

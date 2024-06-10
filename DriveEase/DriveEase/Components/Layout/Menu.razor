@@ -1,0 +1,20 @@
+﻿@rendermode InteractiveServer
+
+<RadzenHeader style="position: static">
+	<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+		<RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+		<RadzenLabel Text="Drive Ease - App" />
+	</RadzenStack>
+</RadzenHeader>
+
+<RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+	<RadzenPanelMenu>
+		<RadzenPanelMenuItem Text="Dashboard" Path="/" Icon="home" />
+		<RadzenPanelMenuItem Text="Vehicle fleet" Path="cars" Icon="motorcycle" />
+		<RadzenPanelMenuItem Text="Registration" Path="rejestracja" Icon="account_box" />
+	</RadzenPanelMenu>
+</RadzenSidebar>
+
+@code {
+	bool sidebar1Expanded = true;
+}
