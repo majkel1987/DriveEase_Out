@@ -10,7 +10,6 @@
 			builder.Property(e => e.City).IsRequired().HasMaxLength(50);
 			builder.Property(e => e.PostalCode).IsRequired().HasMaxLength(6);
 			builder.Property(e => e.Country).IsRequired().HasMaxLength(50);
-			builder.Property(e => e.UserId).IsRequired();
 		}
 	}
 }

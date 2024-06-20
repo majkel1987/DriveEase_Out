@@ -1,4 +1,7 @@
-﻿namespace DriveEase.Infrastructure.Persistance
+﻿
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace DriveEase.Infrastructure.Persistance
 {
 	public class ApplicationDbContext : IdentityDbContext<AppUser>, IApplicationDbContext
 	{
@@ -18,6 +21,21 @@
 		public DbSet<ServiceHistory> ServiceHistory { get; set; }
 		public DbSet<RentalRate> RentalRates { get; set; }
 
+		public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+		{
+			return await Database.BeginTransactionAsync(cancellationToken);
+		}
+
+		public async Task CommitTransactionAsync(IDbContextTransaction transaction, CancellationToken cancellationToken = default)
+		{
+			await transaction.CommitAsync(cancellationToken);
+		}
+
+		public async Task RollbackTransactionAsync(IDbContextTransaction transaction, CancellationToken cancellationToken = default)
+		{
+			await transaction.RollbackAsync(cancellationToken);
+		}
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
@@ -25,6 +43,7 @@
 			modelBuilder.SeedServiceHistory();
 			modelBuilder.SeedClients();
 			modelBuilder.SeedRoles();
+			modelBuilder.SeedAddresses();
 
 			base.OnModelCreating(modelBuilder);
 		}

@@ -7,20 +7,20 @@ using MediatR;
 
 namespace DriveEase.Application.Clients.Commands
 {
-	public class CreateClientCommandHandler : IRequestHandler<CreateClientCommand, CreateClientDto>
+	public class CreateClientWithAddressCommandHandler : IRequestHandler<CreateClientWithAddressCommand, CreateClientDto>
 	{
 		private readonly IClientService _clientService;
 
-		public CreateClientCommandHandler(IClientService clientService)
+		public CreateClientWithAddressCommandHandler(IClientService clientService)
 		{
 			_clientService = clientService;
 		}
-		public async Task<CreateClientDto> Handle(CreateClientCommand request, CancellationToken cancellationToken)
+		public async Task<CreateClientDto> Handle(CreateClientWithAddressCommand request, CancellationToken cancellationToken)
 		{
 			var newClient = new Client
 			{
 				CompanyName = request.CompanyName,
-				IsDeleted = request.IsDeleted,
+				IsDeleted = false,
 				IsPrivateAccount = request.IsPrivateAccount,
 				NipNumber = request.NipNumber,
 				FirstName = request.FirstName,
@@ -29,9 +29,16 @@ namespace DriveEase.Application.Clients.Commands
 				Email = request.Email,
 				PhoneNumber = request.PhoneNumber,
 				DriverLicenseNumber = request.DriverLicenseNumber,
-				Notes = request.Notes
+				Notes = request.Notes,
+				Address = new Address
+				{
+					City = request.Address.City,
+					Street = request.Address.Street,
+					PostalCode = request.Address.PostalCode,
+					Country = request.Address.Country
+				}
 			};
-			var result = await _clientService.CreateClientAsync(newClient);
+			var result = await _clientService.CreateClientWithAddress(newClient);
 			return result.ToCreateClientDto();
 		}
 	}

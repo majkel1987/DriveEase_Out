@@ -1,0 +1,38 @@
+﻿<RadzenFormField Text="@FieldName" AllowFloatingLabel="@AllowFloatingLabel" Variant="@Variant">
+	<ChildContent>
+		<RadzenTextArea @bind-Value="internalValue" @oninput="OnInputChanged" />
+	</ChildContent>
+	<Helper>
+		<ValidationMessage For="@(() => internalValue)" />
+	</Helper>
+</RadzenFormField>
+
+@code {
+	private string internalValue;
+
+	[Parameter]
+	public string Value { get; set; }
+
+	[Parameter]
+	public EventCallback<string> ValueChanged { get; set; }
+
+	[Parameter]
+	public string FieldName { get; set; }
+
+	[Parameter]
+	public bool AllowFloatingLabel { get; set; }
+
+	[Parameter]
+	public Variant Variant { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		internalValue = Value;
+	}
+
+	private async Task OnInputChanged(ChangeEventArgs e)
+	{
+		internalValue = e.Value.ToString();
+		await ValueChanged.InvokeAsync(internalValue);
+	}
+}

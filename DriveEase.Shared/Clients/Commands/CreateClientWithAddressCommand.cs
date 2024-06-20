@@ -1,11 +1,12 @@
 ﻿using DriveEase.Shared.Addresses.Dtos;
+using DriveEase.Shared.Clients.Dtos;
+using MediatR;
 using System.ComponentModel.DataAnnotations;
 
-namespace DriveEase.Shared.Clients.Dtos
+namespace DriveEase.Shared.Clients.Commands
 {
-	public class UpdateClientDto
+	public class CreateClientWithAddressCommand : IRequest<CreateClientDto>
 	{
-		public int Id { get; set; }
 		public bool IsPrivateAccount { get; set; }
 		public string CompanyName { get; set; }
 		public long NipNumber { get; set; }

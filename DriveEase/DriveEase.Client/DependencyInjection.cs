@@ -19,6 +19,8 @@ namespace DriveEase.Client
 			services.AddRadzenComponents();
 			services.AddScoped<ICarHttpRepository, CarHttpRepository>();
 			services.AddScoped<IServiceHttpRepository, ServiceHttpRepository>();
+			services.AddScoped<IClientHttpRepository, ClientHttpRepository>();
+
 			return services;
 		}
 	}

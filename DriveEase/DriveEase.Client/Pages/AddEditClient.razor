@@ -1,0 +1,158 @@
+﻿@page "/addnewclient"
+@page "/editclient/{ClientId:int}"
+@inject IConfiguration Configuration
+@inject IClientHttpRepository ClientHttpRepository
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@rendermode InteractiveAuto
+
+<RadzenComponents />
+
+<PageTitle>@(!_isEdit ? "Add new Client" : "Edit Client")</PageTitle>
+
+<section class="container my-3">
+	<header class="d-flex justify-content-between align-items-center mb-2">
+		<div>
+			<h6 class="text-muted">Clients</h6>
+			<h3>@(!_isEdit ? "Add new Client" : "Edit Client")</h3>
+		</div>
+	</header>
+	<EditForm Model="_client" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+		<DataAnnotationsValidator />
+		<RadzenRow>
+			<RadzenColumn Size="5">
+				<RadzenStack Class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+					<InputTextBoxComponent @bind-Value="_client.FirstName"
+										   FieldName="First Name:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+
+					<InputTextBoxComponent @bind-Value="_client.LastName"
+										   FieldName="Last Name:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+
+					<RadzenFormField Text="Is private account?" AllowFloatingLabel="false" Variant="Variant.Outlined">
+						<RadzenRadioButtonList @bind-Value="@_client.IsPrivateAccount" TValue="bool" class="rz-m-4 rz-mt-8">
+							<Items>
+								<RadzenRadioButtonListItem Text="Yes" Value="true" />
+								<RadzenRadioButtonListItem Text="No" Value="false" />
+							</Items>
+						</RadzenRadioButtonList>
+					</RadzenFormField>
+
+					@if (!_isPrivateAccount)
+					{
+						<InputTextBoxComponent @bind-Value="_client.CompanyName"
+									 FieldName="Company Name:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+
+						<RadzenFormField Text="NIP:" AllowFloatingLabel="false" Variant="Variant.Outlined">
+							<ChildContent>
+								<RadzenNumeric @bind-Value="@_client.NipNumber" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _client.NipNumber)" />
+							</Helper>
+						</RadzenFormField>
+					}
+
+					<RadzenFormField Text="Date of birth:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+						<ChildContent>
+							<RadzenDatePicker @bind-Value="@_client.DateOfBirth" DateFormat="dd.MM.yyyy" ShowCalendarWeek />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _client.DateOfBirth)" />
+							</Helper>
+						</RadzenFormField>
+
+						<InputTextBoxComponent @bind-Value="_client.DriverLicenseNumber"
+											   FieldName="Driver license number:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+
+						<RadzenFormField Text="Email:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_client.Email" Placeholder="example@mail.com" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _client.Email)" />
+							</Helper>
+						</RadzenFormField>
+
+						<RadzenFormField Text="Phone:" AllowFloatingLabel="false" Variant=Variant.Outlined>
+							<ChildContent>
+								<RadzenTextBox @bind-Value="@_client.PhoneNumber" Placeholder="000-000-000" />
+							</ChildContent>
+							<Helper>
+								<ValidationMessage For="@(() => _client.PhoneNumber)" />
+							</Helper>
+						</RadzenFormField>
+
+					</RadzenStack>
+				</RadzenColumn>
+			</RadzenRow>
+			<div class="mb-3">
+				<RadzenButton ButtonType="ButtonType.Submit" Text="Save" IconPosition="IconPosition.Left"
+							  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="@OnValidSubmit" />
+			</div>
+		</EditForm>
+	</section>
+
+	@code {
+	[Parameter]
+	public int? ClientId { get; set; }
+	private bool _isPrivateAccount = true;
+	private bool _isSubmitting = false;
+
+	private CreateClientDto _client = new();
+	private bool _isEdit => ClientId.HasValue;
+
+	protected override async void OnInitialized()
+	{
+		if (_isEdit)
+		{
+			var existingClient = await ClientHttpRepository.GetClient(ClientId.Value);
+			_client = existingClient.ToCreateClientDtoFromClientDto();
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task OnValidSubmit()
+	{
+		if (_isSubmitting)
+		{
+			return;
+		}
+
+		_isSubmitting = true;
+		var clientToUpdate = _client.ToUpdateClientDtoFromCreateClientDto();
+
+		try
+		{
+			if (_isEdit)
+			{
+				clientToUpdate.Id = ClientId.Value;
+				await ClientHttpRepository.UpdateClient(ClientId.Value, clientToUpdate);
+				NotificationService.Notify(NotificationSeverity.Success, "Success", "Client updated successfully!");
+			}
+			else
+			{
+				await ClientHttpRepository.CreateClientWithAddress(_client);
+				NotificationService.Notify(NotificationSeverity.Success, "Success", "Client added successfully!");
+			}
+
+			NavigationManager.NavigateTo("/clients");
+		}
+		catch (Exception)
+		{
+			NotificationService.Notify(NotificationSeverity.Error, "Error", "An error occurred while saving the client!");
+		}
+		finally
+		{
+			_isSubmitting = false;
+		}
+
+		NavigationManager.NavigateTo("/clients");
+	}
+
+	private void OnInvalidSubmit()
+	{
+		NotificationService.Notify(NotificationSeverity.Error, "Error", "Please fill in all required fields!");
+	}
+}

@@ -4,6 +4,7 @@ using DriveEase.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriveEase.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240611172140_ChangesInClientsDb")]
+    partial class ChangesInClientsDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,6 +38,9 @@ namespace DriveEase.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -50,43 +56,19 @@ namespace DriveEase.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.HasIndex("ClientId")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            City = "New York",
-                            Country = "USA",
-                            PostalCode = "10-001",
-                            Street = "Main Street 1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = "Berlin",
-                            Country = "Germany",
-                            PostalCode = "90-001",
-                            Street = "Broadway 2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Los Angeles",
-                            Country = "USA",
-                            PostalCode = "90-001",
-                            Street = "Sunset Boulevard 3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            City = "Warsaw",
-                            Country = "Poland",
-                            PostalCode = "90-001",
-                            Street = "Hollywood Boulevard 4"
-                        });
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("DriveEase.Domain.Entities.AppUser", b =>
@@ -95,9 +77,6 @@ namespace DriveEase.Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AddressId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -163,9 +142,6 @@ namespace DriveEase.Infrastructure.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId")
-                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -529,8 +505,8 @@ namespace DriveEase.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
+                    b.Property<string>("AddressId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyName")
                         .HasMaxLength(50)
@@ -583,9 +559,6 @@ namespace DriveEase.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId")
-                        .IsUnique();
-
                     b.HasIndex("DriverLicenseNumber")
                         .IsUnique();
 
@@ -597,7 +570,6 @@ namespace DriveEase.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            AddressId = 1,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseNumber = "123456789",
                             Email = "john.doe@icloud.com",
@@ -612,7 +584,6 @@ namespace DriveEase.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            AddressId = 2,
                             CompanyName = "Doe & Partners",
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseNumber = "987654321",
@@ -628,7 +599,6 @@ namespace DriveEase.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            AddressId = 3,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseNumber = "ABD2241723",
                             Email = "a.smith@wp.pl",
@@ -643,7 +613,6 @@ namespace DriveEase.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            AddressId = 4,
                             CompanyName = "Smith & Co.",
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseNumber = "VAN123456",
@@ -1255,31 +1224,31 @@ namespace DriveEase.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DriveEase.Domain.Entities.AppUser", b =>
+            modelBuilder.Entity("DriveEase.Domain.Entities.Address", b =>
                 {
-                    b.HasOne("DriveEase.Domain.Entities.Address", "Address")
-                        .WithOne("AppUser")
-                        .HasForeignKey("DriveEase.Domain.Entities.AppUser", "AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("DriveEase.Domain.Entities.Client", b =>
-                {
-                    b.HasOne("DriveEase.Domain.Entities.Address", "Address")
-                        .WithOne("Client")
-                        .HasForeignKey("DriveEase.Domain.Entities.Client", "AddressId")
+                    b.HasOne("DriveEase.Domain.Entities.Client", "Client")
+                        .WithOne("Address")
+                        .HasForeignKey("DriveEase.Domain.Entities.Address", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DriveEase.Domain.Entities.AppUser", "AppUser")
+                        .WithOne("Address")
+                        .HasForeignKey("DriveEase.Domain.Entities.Address", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("DriveEase.Domain.Entities.Client", b =>
+                {
+                    b.HasOne("DriveEase.Domain.Entities.AppUser", "AppUser")
                         .WithMany("Clients")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Address");
 
                     b.Navigation("AppUser");
                 });
@@ -1455,15 +1424,10 @@ namespace DriveEase.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DriveEase.Domain.Entities.Address", b =>
-                {
-                    b.Navigation("AppUser");
-
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("DriveEase.Domain.Entities.AppUser", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Clients");
 
                     b.Navigation("Employees");
@@ -1482,6 +1446,8 @@ namespace DriveEase.Infrastructure.Migrations
 
             modelBuilder.Entity("DriveEase.Domain.Entities.Client", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Invoices");
 
                     b.Navigation("Notifications");

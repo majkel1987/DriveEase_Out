@@ -1,32 +1,56 @@
-﻿using DriveEase.Application.Common.Interfaces;
-using DriveEase.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
-namespace DriveEase.Infrastructure.Services
+﻿namespace DriveEase.Infrastructure.Services
 {
 	public class ClientService : IClientService
 	{
 		private readonly IApplicationDbContext _context;
 
 		public ClientService(IApplicationDbContext context)
-        {
+		{
 			_context = context;
 		}
-        public async Task<Client> CreateClientAsync(Client client)
+		public async Task<Client> CreateClientAsync(Client client)
 		{
 			_context.Clients.Add(client);
 			await _context.SaveChangesAsync();
 			return client;
 		}
 
+		public async Task<Client> CreateClientWithAddress(Client client)
+		{
+			var transaction = await _context.BeginTransactionAsync();
+
+			try
+			{
+				var addressToCreate = client.Address.Adapt<Address>();
+
+				_context.Addresses.Add(addressToCreate);
+				await _context.SaveChangesAsync();
+
+				client.AddressId = addressToCreate.Id;
+				client.Address = addressToCreate;
+
+				_context.Clients.Add(client);
+				await _context.SaveChangesAsync();
+
+				await _context.CommitTransactionAsync(transaction);
+
+				return client;
+			}
+			catch
+			{
+				await _context.RollbackTransactionAsync(transaction);
+				throw;
+			}
+		}
+
 		public async Task<bool> DeleteClientAsync(int id)
 		{
 			var clientToDelete = await GetClientByIdAsync(id);
-			
-			if (clientToDelete == null) 
+
+			if (clientToDelete == null)
 				return false;
 
-			_context.Clients.Remove(clientToDelete);
+			clientToDelete.IsDeleted = true;
 			await _context.SaveChangesAsync();
 			return true;
 		}
@@ -40,6 +64,13 @@ namespace DriveEase.Infrastructure.Services
 		{
 			return await _context.Clients.ToListAsync();
 
+		}
+
+		public async Task<Client> GetClientWithAddress(int id)
+		{
+			return await _context.Clients
+				.Include(c => c.Address)
+				.FirstOrDefaultAsync(c => c.Id == id);
 		}
 
 		public async Task<Client> UpdateClientAsync(int id, Client client)

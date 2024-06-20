@@ -13,7 +13,7 @@
 
 			builder.HasOne(e => e.Address)
 				.WithOne(e => e.AppUser)
-				.HasForeignKey<Address>(e => e.UserId);
+				.HasForeignKey<AppUser>(e => e.AddressId);
 
 			builder.HasMany(e => e.Employees)
 				.WithOne(e => e.AppUser)

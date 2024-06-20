@@ -4,6 +4,8 @@
 	{
 		public int Id { get; set; }
 		public bool IsPrivateAccount { get; set; }
+		public string CompanyName { get; set; }
+		public bool IsDeleted { get; set; } = false;
 		public long NipNumber { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
@@ -14,7 +16,7 @@
 		public string Notes { get; set; }
 		public string UserId { get; set; }
 		public AppUser AppUser { get; set; }
-		public string AddressId { get; set; }
+		public int AddressId { get; set; }
 		public Address Address { get; set; }
 		public ICollection<Rental> Rentals { get; set; } = new HashSet<Rental>();
 		public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();

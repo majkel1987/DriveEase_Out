@@ -18,6 +18,8 @@
   <ItemGroup>
     <Folder Include="Account\Commands\" />
     <Folder Include="Account\Dtos\" />
+    <Folder Include="Addresses\Commands\" />
+    <Folder Include="Addresses\Queries\" />
   </ItemGroup>
 
 </Project>

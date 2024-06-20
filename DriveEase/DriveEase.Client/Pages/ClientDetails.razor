@@ -1,0 +1,143 @@
+﻿@page "/client/{id:int}"
+@inject IConfiguration Configuration
+@inject IClientHttpRepository ClientHttpRepository
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+
+<PageTitle>Service Details</PageTitle>
+
+@if (_client == null)
+{
+	<Spinner />
+}
+else
+{
+	<section class="container my-3">
+		<header class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<h6 class="text-muted">Clients</h6>
+				<h3>Client Details</h3>
+			</div>
+		</header>
+	</section>
+	<main class="row">
+		<section class="col-md-6 mb-4">
+			<div class="card shadow-sm" style="background-color: white;">
+				<h5 class="card-header">
+					Client Details
+				</h5>
+				<div class="card-body">
+					<ul class="list-unstyled">
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">First Name:</span>
+							<span>@_client.FirstName</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Last Name:</span>
+							<span>@_client.LastName</span>
+						</li>
+						@if(_client.IsPrivateAccount == false)
+						{
+							<li class="d-flex mb-2">
+								<span class="font-weight-bold text-left" style="min-width: 250px;">Company Name:</span>
+								<span>@_client.CompanyName</span>
+							</li>
+							<li class="d-flex mb-2">
+								<span class="font-weight-bold text-left" style="min-width: 250px;">NIP Number:</span>
+								<span>@_client.NipNumber</span>
+							</li>
+						}
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Birth Date:</span>
+							<span>@_client.DateOfBirth.ToString("ddd dd MMMM yyyy")</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Email:</span>
+							<span>@_client.Email</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Phone Number:</span>
+							<span>@_client.PhoneNumber</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Driver Licence Number:</span>
+							<span>@_client.DriverLicenseNumber</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Notes:</span>
+							<span>@_client.Notes</span>
+						</li>
+					</ul>
+					<div class="mb-3">
+						<RadzenButton ButtonType="ButtonType.Submit" Text="Edit Client" IconPosition="IconPosition.Left"
+									  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="NavigateToEditClient" />
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="col-md-6 mb-4">
+			<div class="card shadow-sm" style="background-color: white;">
+				<h5 class="card-header">
+					Address Details
+				</h5>
+				<div class="card-body">
+					<ul class="list-unstyled">
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Street:</span>
+							<span>@_client.Address.Street</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Postal Code:</span>
+							<span>@_client.Address.PostalCode</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">City:</span>
+							<span>@_client.Address.City</span>
+						</li>
+						<li class="d-flex mb-2">
+							<span class="font-weight-bold text-left" style="min-width: 250px;">Country:</span>
+							<span>@_client.Address.Country</span>
+						</li>
+					</ul>
+					<div class="mb-3">
+						<RadzenButton ButtonType="ButtonType.Submit" Text="Edit Address" IconPosition="IconPosition.Left"
+									  Variant="Variant.Filled" ButtonStyle="ButtonStyle.Primary" Click="NavigateToEditAddress" />
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+}
+
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	private ClientDto _client;
+	private string _baseUrl = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_baseUrl = Configuration["ApiConfiguration:BaseAddress"];
+
+		try
+		{
+			_client = await ClientHttpRepository.GetClientWithAddress(Id);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error while loading data: {ex.Message}");
+		}
+	}
+
+	private void NavigateToEditClient()
+	{
+		NavigationManager.NavigateTo($"/editclient/{Id}");
+	}
+
+	private void NavigateToEditAddress()
+	{
+		//NavigationManager.NavigateTo($"/editaddress/{_client.AddressId.Id}");
+	}
+}

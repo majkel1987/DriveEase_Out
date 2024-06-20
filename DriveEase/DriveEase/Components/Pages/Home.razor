@@ -1,14 +1,15 @@
 ﻿@page "/"
-@using DriveEase.Shared.CarServices.Dtos
 @inject ICarHttpRepository CarHttpRepository
 @inject IServiceHttpRepository ServiceHttpRepository
+@inject IClientHttpRepository ClientHttpRepository
 @inject IConfiguration Configuration
+@attribute [StreamRendering]
 
 <PageTitle>Home</PageTitle>
 
 @if (_cars == null)
 {
-	<p><em>Loading...</em></p>
+	<Spinner />
 }
 else
 {
@@ -23,7 +24,7 @@ else
 			<section class="col-md-6 mb-4">
 				<div class="card shadow-sm" style="background-color: white;">
 					<h5 class="card-header">
-						Dostępne pojazdy (@_cars.Count())
+						Available vehicles (@_cars.Count())
 					</h5>
 					<div class="card-body">
 						<ul class="row list-unstyled d-flex">
@@ -61,7 +62,7 @@ else
 								<span class="font-weight-bold" style="font-size: 1.1em;">Vehicles</span>
 							</li>
 							<li class="col text-center">
-								<div class="text-success font-weight-bold" style="font-size: 2.2em;">5</div>
+								<div class="text-success font-weight-bold" style="font-size: 2.2em;">@_clients.Count()</div>
 								<span class="font-weight-bold" style="font-size: 1.1em;">Clients</span>
 							</li>
 						</ul>
@@ -102,6 +103,7 @@ else
 @code {
 	private IEnumerable<CarDto> _cars;
 	private IEnumerable<ServiceHistoryDto> _services;
+	private IEnumerable<ClientDto> _clients;
 
 	private int _todayServices;
 	private int _tomorrowServices;
@@ -112,19 +114,12 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		_baseUrl = Configuration["ApiConfiguration:BaseAddress"];
+		_services = await ServiceHttpRepository.GetAllServices();
+		_clients = await ClientHttpRepository.GetClients();
+		await LoadCars();
 
-		try
-		{
-			var services = await ServiceHttpRepository.GetAllServices();
-			_services = services;
-			await LoadCars();
+		LoadServiceCount();
 
-			LoadServiceCount();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
-		}
 		StateHasChanged();
 	}
 
@@ -140,15 +135,8 @@ else
 
 	private async Task LoadCars()
 	{
-		try
-		{
-			var cars = await CarHttpRepository.GetCars();
-			_cars = cars.Where(c => c.IsDeleted == false);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Błąd podczas ładowania danych: {ex.Message}");
-		}
+		var cars = await CarHttpRepository.GetCars();
+		_cars = cars.Where(c => c.IsDeleted == false);
 		StateHasChanged();
 	}
 }

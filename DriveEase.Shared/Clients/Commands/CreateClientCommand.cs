@@ -5,6 +5,8 @@ namespace DriveEase.Shared.Clients.Commands
 {
 	public class CreateClientCommand : IRequest<CreateClientDto>
 	{
+		public string CompanyName { get; set; }
+		public bool IsDeleted { get; set; } = false;
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public DateTime DateOfBirth { get; set; }

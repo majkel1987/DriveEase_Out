@@ -1,5 +1,6 @@
 ﻿using DriveEase.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DriveEase.Application.Common.Interfaces
 {
@@ -17,5 +18,8 @@ namespace DriveEase.Application.Common.Interfaces
 		DbSet<ServiceHistory> ServiceHistory { get; set; }
 		DbSet<RentalRate> RentalRates { get; set; }
 		Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+		Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+		Task CommitTransactionAsync(IDbContextTransaction transaction, CancellationToken cancellationToken = default);
+		Task RollbackTransactionAsync(IDbContextTransaction transaction, CancellationToken cancellationToken = default);
 	}
 }

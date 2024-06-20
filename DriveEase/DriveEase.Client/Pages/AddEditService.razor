@@ -3,7 +3,6 @@
 @inject IServiceHttpRepository ServiceHttpRepository
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
-
 @rendermode InteractiveAuto
 @attribute [StreamRendering]
 
@@ -42,32 +41,14 @@
 							</Helper>
 						</RadzenFormField>
 
-						<RadzenFormField Text="Service Provider:" AllowFloatingLabel="false" Variant=Variant.Outlined>
-							<ChildContent>
-								<RadzenTextBox @bind-Value="@_newService.ServiceProvider" />
-							</ChildContent>
-							<Helper>
-								<ValidationMessage For="@(() => _newService.ServiceProvider)" />
-							</Helper>
-						</RadzenFormField>
+						<InputTextBoxComponent @bind-Value="_newService.ServiceProvider"
+											   FieldName="Service Provider:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
-						<RadzenFormField Text="Service Type:" AllowFloatingLabel="false" Variant=Variant.Outlined>
-							<ChildContent>
-								<RadzenTextBox @bind-Value="@_newService.ServiceType" />
-							</ChildContent>
-							<Helper>
-								<ValidationMessage For="@(() => _newService.ServiceType)" />
-							</Helper>
-						</RadzenFormField>
+						<InputTextBoxComponent @bind-Value="_newService.ServiceType"
+											   FieldName="Service Type:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
-						<RadzenFormField Text="Description:" AllowFloatingLabel="false" Variant=Variant.Outlined>
-							<ChildContent>
-								<RadzenTextArea @bind-Value="@_newService.Description" />
-							</ChildContent>
-							<Helper>
-								<ValidationMessage For="@(() => _newService.Description)" />
-							</Helper>
-						</RadzenFormField>
+						<InputTextAreaComponent @bind-Value="_newService.Description"
+												FieldName="Description" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
 						<RadzenFormField Text="Koszt:" AllowFloatingLabel="false" Variant=Variant.Outlined>
 							<ChildContent>
@@ -78,14 +59,8 @@
 							</Helper>
 						</RadzenFormField>
 
-						<RadzenFormField Text="Notes:" AllowFloatingLabel="false" Variant=Variant.Outlined>
-							<ChildContent>
-								<RadzenTextArea @bind-Value="@_newService.Notes" />
-							</ChildContent>
-							<Helper>
-								<ValidationMessage For="@(() => _newService.Notes)" />
-							</Helper>
-						</RadzenFormField>
+						<InputTextAreaComponent @bind-Value="_newService.Notes"
+												FieldName="Notes" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
 						<RadzenFormField Text="Is service finished?" AllowFloatingLabel="false" Variant=Variant.Outlined>
 							<RadzenRadioButtonList @bind-Value="@_newService.IsFinished" TValue="bool" class="rz-m-4 rz-mt-8">
@@ -95,6 +70,9 @@
 								</Items>
 							</RadzenRadioButtonList>
 						</RadzenFormField>
+
+						<InputTextAreaComponent @bind-Value="_newService.Notes"
+												FieldName="Notes" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
 						<RadzenFormField Text="Service status:" AllowFloatingLabel="false" Variant=Variant.Outlined>
 							<RadzenDropDown Data=@_serviceStatus TextProperty="Name" ValueProperty="Value" @bind-Value="@_newService.Status"
@@ -177,7 +155,7 @@
 
 	private void OnInvalidSubmit()
 	{
-		Console.WriteLine("Invalid submit");
+		NotificationService.Notify(NotificationSeverity.Error, "Please correct the errors and try again");
 	}
 
 	private IEnumerable<EnumValue> GetEnumValues<T>() where T : Enum
