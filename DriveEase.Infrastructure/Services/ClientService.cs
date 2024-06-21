@@ -89,6 +89,8 @@
 			clientToUpdate.Notes = client.Notes;
 			clientToUpdate.IsPrivateAccount = client.IsPrivateAccount;
 			clientToUpdate.NipNumber = client.NipNumber;
+			clientToUpdate.CompanyName = client.CompanyName;
+			clientToUpdate.Address = client.Address;
 
 			await _context.SaveChangesAsync();
 			return clientToUpdate;

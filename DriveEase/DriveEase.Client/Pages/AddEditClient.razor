@@ -38,10 +38,10 @@
 						</RadzenRadioButtonList>
 					</RadzenFormField>
 
-					@if (!_isPrivateAccount)
+					@if (!_client.IsPrivateAccount)
 					{
 						<InputTextBoxComponent @bind-Value="_client.CompanyName"
-									 FieldName="Company Name:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+											   FieldName="Company Name:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
 						<RadzenFormField Text="NIP:" AllowFloatingLabel="false" Variant="Variant.Outlined">
 							<ChildContent>
@@ -82,7 +82,19 @@
 								<ValidationMessage For="@(() => _client.PhoneNumber)" />
 							</Helper>
 						</RadzenFormField>
+					</RadzenStack>
+					<RadzenStack Class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+						<InputTextBoxComponent @bind-Value="_client.Address.Street"
+											   FieldName="Street:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 
+						<InputTextBoxComponent @bind-Value="_client.Address.PostalCode"
+											   FieldName="Postal code:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+
+						<InputTextBoxComponent @bind-Value="_client.Address.City"
+											   FieldName="City:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
+
+						<InputTextBoxComponent @bind-Value="_client.Address.Country"
+											   FieldName="Country:" AllowFloatingLabel="false" Variant="Variant.Outlined" />
 					</RadzenStack>
 				</RadzenColumn>
 			</RadzenRow>
@@ -96,7 +108,6 @@
 	@code {
 	[Parameter]
 	public int? ClientId { get; set; }
-	private bool _isPrivateAccount = true;
 	private bool _isSubmitting = false;
 
 	private CreateClientDto _client = new();
@@ -106,7 +117,7 @@
 	{
 		if (_isEdit)
 		{
-			var existingClient = await ClientHttpRepository.GetClient(ClientId.Value);
+			var existingClient = await ClientHttpRepository.GetClientWithAddress(ClientId.Value);
 			_client = existingClient.ToCreateClientDtoFromClientDto();
 		}
 
